@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevFest | Chrome DevTools MCP Server Workshop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --gray-light: #f5f5f5;
+            --gray-medium: #666666;
+            --gray-dark: #333333;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            color: var(--black);
+            background-color: var(--white);
+            line-height: 1.6;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--white);
+            border-bottom: 1px solid var(--gray-light);
+            z-index: 1000;
+            padding: 20px 40px;
+        }
+
+        nav .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--black);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--gray-dark);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--black);
+        }
+
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-toggle span {
+            width: 24px;
+            height: 2px;
+            background-color: var(--black);
+            transition: all 0.3s;
+        }
+
+        main {
+            margin-top: 80px;
+        }
+
+        .section {
+            padding: 120px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .section-image {
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            object-fit: cover;
+            margin: 0 auto 60px;
+            border: 1px solid var(--gray-light);
+            display: block;
+        }
+
+        .section-title {
+            font-size: 56px;
+            font-weight: 600;
+            margin-bottom: 40px;
+            letter-spacing: -0.02em;
+        }
+
+        .section-content {
+            font-size: 18px;
+            color: var(--gray-dark);
+            line-height: 1.8;
+        }
+
+        .section-content p {
+            margin-bottom: 32px;
+        }
+
+        .section-content h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 48px 0 20px 0;
+        }
+
+        footer {
+            border-top: 1px solid var(--gray-light);
+            padding: 60px 40px;
+            text-align: center;
+            color: var(--gray-medium);
+            font-size: 14px;
+        }
+
+        a {
+            color: var(--black);
+            text-decoration: underline;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 3px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 16px 20px;
+            }
+
+            .nav-container {
+                position: relative;
+            }
+
+            .menu-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--white);
+                flex-direction: column;
+                gap: 0;
+                padding: 20px;
+                border-bottom: 1px solid var(--gray-light);
+                display: none;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links li {
+                width: 100%;
+            }
+
+            .nav-links a {
+                display: block;
+                padding: 16px 0;
+                font-size: 16px;
+                border-bottom: 1px solid var(--gray-light);
+            }
+
+            .nav-links li:last-child a {
+                border-bottom: none;
+            }
+
+            main {
+                margin-top: 60px;
+            }
+
+            .section {
+                padding: 60px 20px;
+            }
+
+            .section-image {
+                height: 250px;
+                margin-bottom: 40px;
+            }
+
+            .section-title {
+                font-size: 32px;
+                margin-bottom: 30px;
+            }
+
+            .section-content {
+                font-size: 16px;
+            }
+
+            .section-content h3 {
+                font-size: 20px;
+                margin: 32px 0 16px 0;
+            }
+
+            footer {
+                padding: 40px 20px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-title {
+                font-size: 28px;
+            }
+
+            .logo {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">DevFest Workshop</a>
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="devfest.html">DevFest</a></li>
+                <li><a href="devtools-mcp.html">DevTools MCP</a></li>
+                <li><a href="about.html">关于我</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="section">
+            <h1 class="section-title">关于 GDG 和 DevFest</h1>
+            <img src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=1200&q=80&fit=crop" alt="Developer Community" class="section-image">
+            <div class="section-content">
+                <h3>Google Developer Groups (GDG)</h3>
+                <p>
+                    Google Developer Groups 是一个面向开发者的全球社区网络。GDG 为开发者提供了一个平台，
+                    让他们可以学习、分享和讨论 Google 技术，以及探索最新的开发趋势和最佳实践。
+                </p>
+                <p>
+                    GDG 社区由志愿者组织，定期举办技术分享会、工作坊和开发者活动。
+                    无论你是初学者还是经验丰富的开发者，GDG 都欢迎你的加入。
+                </p>
+
+                <h3>DevFest</h3>
+                <p>
+                    DevFest 是 GDG 社区每年举办的最重要的年度活动之一。这是一个全球性的开发者节日，
+                    旨在庆祝技术创新、知识分享和社区建设。
+                </p>
+                <p>
+                    DevFest 活动通常包括技术演讲、实践工作坊、黑客马拉松和网络交流环节。
+                    它为开发者提供了一个独特的机会，可以与同行交流、学习新技术，并探索最新的开发工具和框架。
+                </p>
+                <p>
+                    本次 Workshop 作为 DevFest 的一部分，专注于 Chrome DevTools MCP Server 这一前沿技术，
+                    为参与者提供深入的学习和实践体验。
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 DevFest Workshop. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu when clicking on a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>
+
